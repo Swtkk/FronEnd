@@ -1,5 +1,5 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {retrieveTodoApi, updateTodoApi} from "./api/TodoApiService";
+import {createTodoApi, retrieveTodoApi, updateTodoApi} from "./api/TodoApiService";
 import {useEffect, useState} from "react";
 import {useAuth} from "./security/AuthContext";
 import {Todo} from "../../types";
@@ -14,8 +14,12 @@ export default function TodoComponent() {
     const [description,setDescription] = useState('')
     const [targetDate,setTargetDate] = useState('')
 
-    useEffect(() => retrieveTodos(),[])
+    useEffect(() => retrieveTodos(),
+        [id])
     function retrieveTodos(){
+
+        // @ts-ignore
+
         retrieveTodoApi(username,id)
           .then(res => {
                 setDescription(res.data.description)
@@ -34,26 +38,36 @@ export default function TodoComponent() {
             done: false
         }
         console.log(todo)
+        // @ts-ignore
+        if(id === -1){
+            createTodoApi(username,todo)
+                .then(res =>{
+                    navigate("/todos")
+                })
+                .catch(err=> console.log(err))
+        }
+
         updateTodoApi(username,id,todo)
             .then(res =>{
                 navigate("/todos")
             })
             .catch(err=> console.log(err))
-    }
-
-    function validate(values:any){
-        let errors = {
-            description: '',
-            targetDate: ''
-        }
-        if(values.description.length < 5) {
-           errors.description = 'Enter atleast 5 characters'
-        }
-        if(values.targetDate == null){
-            errors.targetDate = 'Enter a target date'
-        }
 
     }
+
+    // function validate(values:any){
+    //     let errors = {
+    //         description: '',
+    //         targetDate: ''
+    //     }
+    //     if(values.description.length < 5) {
+    //        errors.description = 'Enter atleast 5 characters'
+    //     }
+    //     if(values.targetDate == null || values.targetDate === ''){
+    //         errors.targetDate = 'Enter a target date'
+    //     }
+    //     return errors
+    // }
 
     return (
         <div className={"container flex flex-col text-center mx-auto items-center justify-center"}>
@@ -62,7 +76,7 @@ export default function TodoComponent() {
                 <Formik initialValues={{description, targetDate}}
                         onSubmit={onSub}
                         enableReinitialize={true}
-                        validate = {validate}
+                        // validate = {validate}
                         validateOnChange={false}
                         validateOnBlur={false}
                 >
@@ -87,7 +101,7 @@ export default function TodoComponent() {
                       <Field className={"border-black border-2 w-1/3 p-1"} type={"date"} name={"targetDate"} />
                   </fieldset>
                         <div>
-                        <button className={"bg-green-500 mt-5 py-2 px-6 border-black border-2 rounded-xl"} type="submit">
+                        <button  className={"bg-green-500 mt-5 py-2 px-6 border-black border-2 rounded-xl"} >
                             Save
                         </button>
                         </div>

@@ -38,7 +38,9 @@ export default function ListTodosComponent() {
     }
     function updateTodo(id:number){
         navigate(`/todo/${id}`)
-
+    }
+    function addNewTodo(){
+        navigate(`/todo/-1`)
     }
 
 
@@ -77,6 +79,7 @@ export default function ListTodosComponent() {
                     </tbody>
                 </table>
             </div>
+            <button className={"py-2 px-6 border-black border-2 rounded-xl bg-green-600/90 mt-10"} onClick={addNewTodo}>Add New Todo</button>
         </div>
     )
 }
